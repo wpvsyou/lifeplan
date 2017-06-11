@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+def dbflow_version = "4.0.3"
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'wpapkkeystore.keystore'
+            keyPassword 'wangpeng880404'
+            storeFile file('D:/Android/androidKeyStore/wpApkKeyStore.keystore')
+            storePassword 'wangpeng880404'
+        }
+    }
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.wp.lifeplan"
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0.1"
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    buildTypes {
+        release {
+            debuggable false
+            signingConfig signingConfigs.config
+            minifyEnabled true
+            proguardFile 'proguard-rules.txt'
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.config
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.+'
+    compile 'com.android.support:design:25.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.android.support:recyclerview-v7:25.+'
+
+    annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+}

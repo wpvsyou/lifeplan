@@ -1,0 +1,71 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">时间管理</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="generate_date">时   间：</string>
+    <string name="generate_date_ed_hint">点击输入时间</string>
+    <string name="level">四个象限：</string>
+    <string name="plan">四个D：</string>
+    <string name="status">状 态：</string>
+    <string name="schedule_time">预计完成时间：</string>
+    <string name="idea">想 法：</string>
+    <string name="target">目 的：</string>
+    <string name="next_step">下一步：</string>
+    <string name="save">保 存</string>
+    <string name="cancel">放 弃</string>
+    <string name="hint_text_add_plan">请您添加计划：</string>
+
+    <!-- Label for button to confirm chosen date or TIME [CHAR LIMIT=30] -->
+    <!--
+         Content description for the hour selector in the TIME picker, which displays
+         selectable hours of the day along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    -->
+    <!--
+         Content description for the minute selector in the TIME picker, which displays
+         selectable five-minute intervals along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    -->
+    <!-- Accessibility announcement for hour circular picker [CHAR LIMIT=NONE] -->
+    <!-- Accessibility announcement for minute circular picker [CHAR LIMIT=NONE] -->
+
+    <!--
+        Content description for the month and day selector in the date picker, which displays
+        a selectable grid of days laid out by month.
+        [CHAR LIMIT=50]
+     -->
+    <!--
+        Content description for the year selector in the date picker, which displays
+        a scrolling, vertical list of years.
+        [CHAR LIMIT=50]
+     -->
+    <!-- Accessibility announcement for the day picker [CHAR LIMIT=NONE] -->
+    <!-- Accessibility announcement for the year picker [CHAR LIMIT=NONE] -->
+    <!-- Accessibility description for the item that is currently selected. -->
+    <!-- Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] -->
+
+    <!-- DO NOT TRANSLATE -->
+    <!-- DO NOT TRANSLATE -->
+
+    <!-- DO NOT TRANSLATE -->
+    <!-- DO NOT TRANSLATE -->
+
+    <!-- DO NOT TRANSLATE -->
+    <string name="dialog_message_request_location">正在请求位置信息，请稍后...</string>
+    <string name="ask_user_enter_location_dialog_message">获取位置信息失败，是否手动输入位置信息？</string>
+    <string name="details_invalide_must_set_create_time">请您输入时间</string>
+    <string name="details_invaild_location_error">创建时间规划失败，因为不能获取到有效的位置信息！</string>
+    <string name="enter_location_dialog_et_hint_str">请手动输入您的位置信息:</string>
+    <string name="details_invalid_enter_location_failed">位置信息不能为空，如果您不想保存此时间规划，请您取消！</string>
+    <string name="details_invaild_enter_loctaion_none">保存时间规划失败，位置信息不能为空！</string>
+    <string name="enter_location_dialog_title">位置</string>
+    <string name="location">上次更新位置：</string>
+    <string name="start_location">创建位置：</string>
+    <string name="add_pl_success">添加时间规划成功！</string>
+    <string name="details_invalide_must_set_idea">想法不能为空</string>
+    <string name="save_fp_failed">保存时间规划失败！</string>
+    <string name="generate_lp_time_hine">保存时自动生成时间</string>
+</resources>

@@ -1,0 +1,82 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DetailSubheadStyle">
+        <item name="android:textSize">@dimen/text_subhead</item>
+        <item name="android:layout_width">130dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
+
+    <style name="DetailsItemStyle">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+
+    <style name="ExtentTextViewStyle" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="com.wp.lifeplan:mainTextColor">@color/default_text_color</item>
+        <item name="com.wp.lifeplan:titleTextColor">@android:color/white</item>
+        <item name="com.wp.lifeplan:hint">@string/hint_text_add_plan</item>
+    </style>
+
+
+    <style name="TimerPickerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="com.wp.lifeplan:collect_titleTextColor">@color/colorAccent</item>
+    </style>
+
+    <style name="HorizontalSpinnerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="com.wp.lifeplan:spinner_titleTextColor">@color/colorAccent</item>
+    </style>
+
+    <style name="ItemTableStyle" >
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">75dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:background">@drawable/green_solid_bkg</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ItemHeadStyle" >
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+    </style>
+</resources>

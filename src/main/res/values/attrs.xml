@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ExtendTextView">
+        <attr name="title" format="string" />
+        <attr name="titleTextColor" format="color" />
+        <attr name="hint" format="string" />
+        <attr name="mainTextColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CollectTimeView">
+        <attr name="collect_title_str" format="string" />
+        <attr name="collect_titleTextColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="HorizontalSpinnerView">
+        <attr name="spinner_title_str" format="string" />
+        <attr name="spinner_titleTextColor" format="color" />
+        <attr name="enter" format="reference" />
+    </declare-styleable>
+</resources>

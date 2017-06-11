@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent" android:orientation="vertical"
+    android:layout_marginBottom="10dp" android:layout_height="wrap_content"
+    android:layout_marginTop="10dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent" android:background="@drawable/green_solid_bkg"
+        android:layout_height="35dp" android:gravity="center_vertical">
+        <TextView style="@style/DetailSubheadStyle" android:textColor="@android:color/white"
+            android:layout_width="wrap_content" android:text="@string/next_step" android:paddingLeft="10dp"
+            android:layout_height="match_parent" android:gravity="center" android:id="@+id/title"/>
+        <LinearLayout android:layout_width="0px" android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <ImageView android:layout_width="wrap_content" android:src="@drawable/lf_selecter_icon"
+            android:layout_height="match_parent" android:scaleX="0.9" android:scaleY="0.4"
+            android:paddingRight="30dp" android:paddingLeft="30dp" android:id="@+id/extend_button"/>
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="match_parent" android:layout_height="130dp"
+        android:background="@drawable/white_solid_bkg" android:gravity="top" android:layout_marginTop="10dp"
+        android:id="@+id/text_view" android:padding="10dp" android:textSize="@dimen/text_subhead"/>
+</LinearLayout>

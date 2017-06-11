@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="level_array">
+        <item>重要且紧急</item>
+        <item>重要不紧急</item>
+        <item>不重要但紧急</item>
+        <item>不重要不紧急</item>
+    </string-array>
+
+    <string-array name="status_array">
+        <item>未开始</item>
+        <item>进行中</item>
+        <item>完成</item>
+    </string-array>
+
+    <string-array name="plan_array">
+        <item>Do</item>
+        <item>Delay</item>
+        <item>Depute</item>
+        <item>Delete</item>
+    </string-array>
+</resources>

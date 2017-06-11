@@ -1,0 +1,7 @@
+<LinearLayout style="@style/DetailsItemStyle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView style="@style/DetailSubheadStyle" android:text="@string/status" android:id="@+id/title" />
+    <Spinner
+        android:layout_width="match_parent" android:id="@+id/spinner"
+        android:layout_height="wrap_content" />
+</LinearLayout>

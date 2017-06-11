@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:paddingLeft="10dp"
+    android:paddingRight="10dp" android:paddingTop="5dp" android:id="@+id/item_view"
+    android:orientation="vertical" android:gravity="center"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <TextView style="@style/ItemHeadStyle" tools:text="啊大家发垃圾地方垃圾地方垃圾地方垃圾袋楼房吉安两地分居埃里克发动机阿斯利康发动机埃里克森附件"
+        android:id="@+id/item_idea" />
+
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent"
+        android:paddingTop="5dp" android:layout_height="wrap_content"
+        android:paddingBottom="5dp" android:gravity="center_vertical">
+
+        <TextView style="@style/ItemHeadStyle" android:singleLine="false" android:maxLines="2"
+            android:paddingTop="0dp" android:layout_width="wrap_content" android:textStyle="bold"
+            android:id="@+id/time" android:maxWidth="130dp" android:gravity="center"
+            tools:text="akdfja;sdjfa;dfj;asdjfalkfjaklfdadfklajsdf" android:textColor="@color/lpcolors_200"/>
+
+        <LinearLayout android:layout_width="0px" android:layout_weight="1" android:layout_height="match_parent" />
+
+        <TextView android:id="@+id/table_level" style="@style/ItemTableStyle" tools:text="不重要不紧急"/>
+        <TextView android:id="@+id/table_plan" style="@style/ItemTableStyle" tools:text="Depute" />
+            android:layout_width="50dp"/>
+        <TextView android:id="@+id/table_status" style="@style/ItemTableStyle" tools:text="未完成" />
+            android:layout_width="50dp"/>
+    </LinearLayout>
+</LinearLayout>

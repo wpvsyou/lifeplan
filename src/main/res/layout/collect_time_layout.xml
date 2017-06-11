@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DetailsItemStyle" android:id="@+id/generate_date_item">
+    <TextView android:id="@+id/collect_title"
+        style="@style/DetailSubheadStyle" android:text="@string/generate_date" />
+
+    <EditText android:layout_width="wrap_content" android:layout_weight="1"
+        android:layout_height="wrap_content" android:id="@+id/timer"
+        android:textColor="@color/default_text_color" android:textColorHint="@color/default_text_color"
+        android:hint="@string/generate_date_ed_hint" android:textSize="@dimen/text_body"/>
+</LinearLayout>

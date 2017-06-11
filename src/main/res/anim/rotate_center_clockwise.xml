@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~
+  ~ Copyright (c) 2017 Capital Alliance Software(Pekall)
+  ~                  All Rights Reserved
+  ~ NOTICE: All information contained herein is, and remains the property of
+  ~ Pekall and its suppliers,if any. The intellectual and technical concepts
+  ~ contained herein are proprietary to Pekall and its suppliers and may be
+  ~ covered by P.R.C, U.S. and Foreign Patents, patents in process, and are
+  ~ protected by trade secret or copyright law. Dissemination of this
+  ~ information or reproduction of this material is strictly forbidden unless
+  ~ prior written permission is obtained from Pekall.
+  ~                  www.pekall.com
+  -->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <rotate android:fromDegrees="0"
+            android:toDegrees="359"
+            android:repeatCount="-1"
+            android:duration="1200"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            />
+</set>

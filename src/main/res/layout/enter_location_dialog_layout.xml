@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent" android:id="@+id/location_et"
+        android:layout_height="130dp" android:padding="40dp" android:textSize="@dimen/text_subhead"
+        android:gravity="top" android:hint="@string/enter_location_dialog_et_hint_str"/>
+</LinearLayout>
