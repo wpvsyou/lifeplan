@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,6 +17,7 @@ import com.wp.lifeplan.R;
 import com.wp.lifeplan.ui.BuzzActivity;
 import com.wp.lifeplan.ui.LpActivity;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -38,18 +38,34 @@ public class AlertClockService extends Service {
     private final static String UPDATE_ALERT_CLOCK_SERVICE = "update_alert_clock_service";
     private final static String ALARM_ACTION = "com.wp.lifeplan.ALARM_ACTION";
     private final static String EXTRA_NAME = "extra_name";
-    private final static String EXTRA_NOTIFY_FREQUENCY = "extra_notify_frequency";
+    private final static String EXTRA_TARGET_TIME_OFFSET = "extra_notify_frequency";
     private final static String EXTRA_IS_ADD = "extra_is_add";
     private final static String ACTION_MODIFY_ALARM = "com.wp.lifeplan.ACTION_MODIFY_ALARM";
     public final static String ACTION_MDM_STOP_BUZZ = "com.wp.lifeplan.ACTION_MDM_STOP_BUZZ";
     private final static HashMap<String, PendingIntent> ALARM_CLOCKS = new HashMap<>();
     private final static long ONE_DAY = 1000 * 60 * 60 * 24;
 
-    public static void addAlarmClock(Context ctx, String name, long notifyFrequency) {
+    public static void scheduleAlarmClock(Context context, String name, Calendar calendar, Builder builder) {
+        long nowMillis = calendar.getTimeInMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, builder.hours);
+        calendar.set(Calendar.MINUTE, builder.minute);
+        long targetMillis = calendar.getTimeInMillis();
+
+        long offset = targetMillis - nowMillis;
+        Log.i(TAG, String.format("scheduleAlarmClock, now  millis[%s], target millis[%s], offset[%s]",
+                nowMillis, targetMillis, offset));
+        if (offset > 0) {
+            addAlarmClock(context, name, offset);
+        } else {
+            addAlarmClock(context, name, targetMillis + ONE_DAY - nowMillis);
+        }
+    }
+
+    public static void addAlarmClock(Context ctx, String name, long targetTimeOffset) {
         Intent i = new Intent(ACTION_MODIFY_ALARM);
         i.setPackage(ctx.getPackageName());
         i.putExtra(EXTRA_NAME, name);
-        i.putExtra(EXTRA_NOTIFY_FREQUENCY, notifyFrequency);
+        i.putExtra(EXTRA_TARGET_TIME_OFFSET, targetTimeOffset);
         i.putExtra(EXTRA_IS_ADD, true);
         ctx.startService(i);
     }
@@ -85,7 +101,6 @@ public class AlertClockService extends Service {
         super.onCreate();
         mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mMediaPlayer = MediaPlayer.create(this, R.raw.buzz);
     }
 
     private AlarmManager mAlarmManager;
@@ -127,18 +142,17 @@ public class AlertClockService extends Service {
                     synchronized (ALARM_CLOCKS) {
                         PendingIntent pi = ALARM_CLOCKS.get(key);
                         mAlarmManager.cancel(pi);
-                        mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, ONE_DAY, pi);
+                        mAlarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ONE_DAY, pi);
                     }
 
                     //Show UI
-                    Intent notifyUi = new Intent(this, BuzzActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(notifyUi);
+                    BuzzActivity.startBuzz(this, key);
 
                     //Play sound
                     mAudioManager.setStreamVolume(3, mAudioManager.
                             getStreamMaxVolume(3), 0);
 
+                    mMediaPlayer = MediaPlayer.create(this, R.raw.buzz);
                     mMediaPlayer.setLooping(true);
                     mMediaPlayer.setVolume(1.0F, 1.0F);
                     mMediaPlayer.start();
@@ -146,7 +160,7 @@ public class AlertClockService extends Service {
                 case ACTION_MODIFY_ALARM:
                     String name = intent.getStringExtra(EXTRA_NAME);
                     boolean isAdd = intent.getBooleanExtra(EXTRA_IS_ADD, true);
-                    long notifyFrequency = intent.getLongExtra(EXTRA_NOTIFY_FREQUENCY,
+                    long targetMillisOffset = intent.getLongExtra(EXTRA_TARGET_TIME_OFFSET,
                             10000);
 
                     if (isAdd) {
@@ -178,8 +192,8 @@ public class AlertClockService extends Service {
                             i.putExtra(EXTRA_NAME, name);
                             PendingIntent pi = PendingIntent.getService(getApplicationContext(),
                                     0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-                            long time = SystemClock.elapsedRealtime() + notifyFrequency;
-                            mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time,
+                            long time = System.currentTimeMillis() + targetMillisOffset;
+                            mAlarmManager.set(AlarmManager.RTC_WAKEUP, time,
                                     pi);
                             ALARM_CLOCKS.put(name, pi);
                         }
@@ -201,5 +215,27 @@ public class AlertClockService extends Service {
             }
         }
         return START_STICKY;
+    }
+
+    public static class Builder {
+        /**
+         * 24h
+         */
+        private int hours;
+        private int minute;
+
+        public enum Frequency {
+            once, onceAday,
+        }
+
+        public Builder setHours(int h) {
+            hours = h;
+            return this;
+        }
+
+        public Builder setMinute(int m) {
+            this.minute = m;
+            return this;
+        }
     }
 }

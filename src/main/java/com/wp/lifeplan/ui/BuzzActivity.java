@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import com.wp.lifeplan.R;
 import com.wp.lifeplan.service.AlertClockService;
@@ -25,6 +26,14 @@ public class BuzzActivity extends Activity {
         }
     };
 
+    private final static String EXTRA_MSG = "extra_msg";
+    public static void startBuzz(Context ctx, String msg) {
+        Intent notifyUi = new Intent(ctx, BuzzActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        notifyUi.putExtra(EXTRA_MSG, msg);
+        ctx.startActivity(notifyUi);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +45,7 @@ public class BuzzActivity extends Activity {
                 finish();
             }
         });
+        ((TextView) findViewById(R.id.imageView)).setText(getIntent().getStringExtra(EXTRA_MSG));
         mMusicBellAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_center_clockwise);
         mMusicBellAnimation.setInterpolator(this, android.R.anim.linear_interpolator);
         findViewById(R.id.bell).startAnimation(mMusicBellAnimation);
