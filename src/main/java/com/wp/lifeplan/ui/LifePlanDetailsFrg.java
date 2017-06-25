@@ -1,10 +1,6 @@
 package com.wp.lifeplan.ui;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
+import android.app.*;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +19,11 @@ import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.google.gson.JsonSyntaxException;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.wp.lifeplan.LpApplication;
 import com.wp.lifeplan.R;
-import com.wp.lifeplan.model.beans.LpDetailsBean;
-import com.wp.lifeplan.model.db.LpDbHelper;
+import com.wp.lifeplan.model.LifePlan;
+import com.wp.lifeplan.model.LifePlan_Table;
 import com.wp.lifeplan.service.LocationService;
 
 import java.util.Arrays;
@@ -35,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.wp.lifeplan.ui.CollectTimeLinearView.SDF_LOG;
-import static com.wp.lifeplan.ui.CollectTimeLinearView.SDF_LOG2;
 import static com.wp.lifeplan.ui.CollectTimeLinearView.SDF_LOG3;
 
 /**
@@ -45,31 +41,7 @@ import static com.wp.lifeplan.ui.CollectTimeLinearView.SDF_LOG3;
 public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener {
     private final static String TAG = "LifePlanDetailsFrg";
     private final static String EXTRA_LPDTS_JSON = "extra_lpdts_json";
-
-    public enum UiMode {
-        recoveryMode, createMode,
-    }
-
     private static UiMode mMode;
-
-    public static LifePlanDetailsFrg newInstance() {
-        LifePlanDetailsFrg f = new LifePlanDetailsFrg();
-        mMode = UiMode.createMode;
-        return f;
-    }
-
-    public static LifePlanDetailsFrg newInstance(LpDetailsBean lpDetailsBean) {
-        if (lpDetailsBean == null) {
-            return newInstance();
-        }
-        LifePlanDetailsFrg f = new LifePlanDetailsFrg();
-        Bundle b = new Bundle(1);
-        b.putString(EXTRA_LPDTS_JSON, lpDetailsBean.toJson());
-        f.setArguments(b);
-        mMode = UiMode.recoveryMode;
-        return f;
-    }
-
     private CollectTimeLinearView mGenerateLpTime;
     private CollectTimeLinearView mPlanDoneTime;
     private HorizontalSpinnerView mPlanLevel;
@@ -82,16 +54,30 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
     private EditText mLastLocation;
     private Button mSave;
     private Button mCancel;
-
     private View mRootView;
-    private static LpDbHelper mDbHelper;
+    private LifePlan mLifePlan;
 
-    private LpDetailsBean mLpDetailsBean;
+    public static LifePlanDetailsFrg newInstance() {
+        LifePlanDetailsFrg f = new LifePlanDetailsFrg();
+        mMode = UiMode.createMode;
+        return f;
+    }
+
+    public static LifePlanDetailsFrg newInstance(LifePlan lpDetailsBean) {
+        if (lpDetailsBean == null) {
+            return newInstance();
+        }
+        LifePlanDetailsFrg f = new LifePlanDetailsFrg();
+        Bundle b = new Bundle(1);
+        b.putString(EXTRA_LPDTS_JSON, lpDetailsBean.toJson());
+        f.setArguments(b);
+        mMode = UiMode.recoveryMode;
+        return f;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDbHelper = new LpDbHelper();
     }
 
     @Nullable
@@ -144,12 +130,17 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                 break;
             }
             try {
-                mLpDetailsBean = new LpDetailsBean(json);
+                LifePlan lifePlan = new LifePlan(json);
+                mLifePlan = SQLite
+                        .select()
+                        .from(LifePlan.class)
+                        .where(LifePlan_Table.uuid.is(lifePlan.uuid))
+                        .querySingle();
             } catch (JsonSyntaxException j) {
                 j.printStackTrace();
                 break;
             }
-            resetUiByLpDetailsBean(mLpDetailsBean);
+            resetUiByLpDetailsBean(mLifePlan);
         } while (false);
     }
 
@@ -165,7 +156,7 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
         }
     }
 
-    private void resetUiByLpDetailsBean(LpDetailsBean lpDetailsBean) {
+    private void resetUiByLpDetailsBean(LifePlan lpDetailsBean) {
         mGenerateLpTime.setDate(SDF_LOG.format(new Date(lpDetailsBean.getGeneratePlanData())));
         mPlanLevel.putUserSelectedStr(lpDetailsBean.getLevel());
         mPlan.putUserSelectedStr(lpDetailsBean.getPlan());
@@ -193,14 +184,14 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
     }
 
     private boolean isFinalStatus() {
-        if (mLpDetailsBean == null) {
+        if (mLifePlan == null) {
             return false;
         }
 
         String[] statusArrays = getResources().getStringArray(R.array.status_array);
         List<String> statusList = Arrays.asList(statusArrays);
         String finalStatusKey = statusList.get(statusList.size() - 1);
-        return (TextUtils.equals(mLpDetailsBean.getStatus(), finalStatusKey));
+        return (TextUtils.equals(mLifePlan.getStatus(), finalStatusKey));
     }
 
     @Override
@@ -229,54 +220,68 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
         String target = mTarget.getText();
         String nextStep = mNextStep.getText();
 
-//        Log.i(TAG, String.format("Start time[%s], level[%s], plan[%s], status[%s], final " +
-//                        "time[%s], idea[%s], target[%s], next step[%s]",
-//                generatePlDate > 0 ? SDF_LOG.format(new Date(generatePlDate)) : "error",
-//                level,
-//                plan,
-//                status,
-//                scheduleTime > 0 ? SDF_LOG.format(new Date(scheduleTime)) :  "error",
-//                idea,
-//                target,
-//                nextStep));
-
-        long curDate = System.currentTimeMillis();
+        final long curDate = System.currentTimeMillis();
         mGenerateLpTime.setDate(SDF_LOG.format(curDate));
-        if (mLpDetailsBean == null) {
-            mLpDetailsBean = new LpDetailsBean(UUID.randomUUID().toString(),
+        if (mLifePlan == null) {
+            mLifePlan = new LifePlan(UUID.randomUUID().toString(),
                     curDate, idea,
                     level, plan, status, target, nextStep, scheduleTime);
+            Log.i(TAG, "generate a new life plan: " + mLifePlan.getUuid());
         }
 
-        mLpDetailsBean.setStatus(status);
-        mLpDetailsBean.setLevel(level);
-        mLpDetailsBean.setPlan(plan);
-        mLpDetailsBean.setIdea(idea);
-        mLpDetailsBean.setTarget(target);
-        mLpDetailsBean.setNextStep(nextStep);
+        mLifePlan.setStatus(status);
+        mLifePlan.setLevel(level);
+        mLifePlan.setPlan(plan);
+        mLifePlan.setIdea(idea);
+        mLifePlan.setTarget(target);
+        mLifePlan.setNextStep(nextStep);
         if (scheduleTime > 0) {
-            mLpDetailsBean.setScheduledTime(scheduleTime);
+            mLifePlan.setScheduledTime(scheduleTime);
         }
 
-        Log.i(TAG, "save-> " + mLpDetailsBean);
-//        String json = mLpDetailsBean.toJson();
-//        Log.i(TAG, "json-> " + json);
-//        LpDetailsBean tmp = new LpDetailsBean(json);
-//        Log.i(TAG, "from json-> " + tmp);
-
-        if (!checkLpDetailsBeanValid(mLpDetailsBean)) {
+        Log.i(TAG, "save-> " + mLifePlan);
+        if (!checkLpDetailsBeanValid(mLifePlan)) {
             return;
         }
 
         final ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.
                 newInstance(getString(R.string.dialog_message_request_location));
         progressDialogFragment.show(getFragmentManager(), "RequestLocationDialog");
+        final EnterLocationDialog.Callback callback = new EnterLocationDialog.Callback() {
+            @Override
+            public void onEnterLocationSuccess(String address) {
+                if (mLifePlan != null) {
+                    if (!isFinalStatus() && mMode == UiMode.createMode) {
+                        mLifePlan.setAddress(address);
+                    } else {
+                        mLifePlan.setFinalAddress(address);
+                    }
+
+                    if (mMode == UiMode.createMode) {
+                        Log.i(TAG, "insert2: " + mLifePlan);
+                        mLifePlan.save();
+                    } else {
+                        Log.i(TAG, "update2: " + mLifePlan);
+                        mLifePlan.update();
+                    }
+                }
+                Activity activity = getActivity();
+                Toast.makeText(getActivity(), "添加时间规划成功！", Toast.LENGTH_SHORT).show();
+                if (activity != null) {
+                    activity.finish();
+                }
+            }
+
+            @Override
+            public void onEnterLocationFailed() {
+            }
+        };
 
         final DecisionDialogFragment.Callback askUserEnterLocationCallback = new
                 DecisionDialogFragment.Callback() {
                     @Override
                     public void userSelectedYes() {
-                        EnterLocationDialog.newInstance(mLpDetailsBean, isFinalStatus())
+                        EnterLocationDialog.newInstance(callback, isFinalStatus())
                                 .show(getFragmentManager(), "EnterLocationDialog");
                     }
 
@@ -301,20 +306,29 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                         } else {
                             Log.i(TAG, "get address: " + bdLocation.getAddrStr());
                             if (!isFinalStatus() && mMode == UiMode.createMode) {
-                                mLpDetailsBean.setAddress(bdLocation.getAddrStr());
-                                mLpDetailsBean.setLatitude(String
+                                mLifePlan.setAddress(bdLocation.getAddrStr());
+                                mLifePlan.setLatitude(String
                                         .valueOf(bdLocation.getLatitude()));
-                                mLpDetailsBean.setLongitude(String
+                                mLifePlan.setLongitude(String
                                         .valueOf(bdLocation.getLongitude()));
                             } else {
-                                mLpDetailsBean.setFinalAddress(bdLocation.getAddrStr());
-                                mLpDetailsBean.setFinalLatitude(String
+                                mLifePlan.setFinalAddress(bdLocation.getAddrStr());
+                                mLifePlan.setFinalLatitude(String
                                         .valueOf(bdLocation.getLatitude()));
-                                mLpDetailsBean.setFinalLongitude(String
+                                mLifePlan.setFinalLongitude(String
                                         .valueOf(bdLocation.getLongitude()));
                             }
-                            mLpDetailsBean.setScheduledTime(System.currentTimeMillis());
-                            mDbHelper.insertLpDetails(mLpDetailsBean);
+                            if (mLifePlan.getScheduledTime() <= 0) {
+                                mLifePlan.setScheduledTime(System.currentTimeMillis());
+                            }
+                            if (mMode == UiMode.createMode) {
+                                Log.i(TAG, "insert1: " + mLifePlan);
+                                mLifePlan.save();
+                            } else {
+                                Log.i(TAG, "update1: " + mLifePlan);
+                                mLifePlan.update();
+                            }
+
                             Activity activity = getActivity();
                             Toast.makeText(getActivity(), R.string.add_pl_success, Toast.LENGTH_SHORT).show();
                             if (activity != null) {
@@ -325,7 +339,7 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                 });
     }
 
-    private boolean checkLpDetailsBeanValid(LpDetailsBean lpDetailsBean) {
+    private boolean checkLpDetailsBeanValid(LifePlan lpDetailsBean) {
         if (lpDetailsBean.getGeneratePlanData() <= 0) {
             showToast(R.string.details_invalide_must_set_create_time);
             return false;
@@ -345,15 +359,20 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                 Snackbar.LENGTH_SHORT).show();
     }
 
+    public enum UiMode {
+        recoveryMode, createMode,
+    }
+
     public static class EnterLocationDialog extends DialogFragment {
         private final static String ARGS_DETAILS = "args_details";
         private final static String ARGS_IS_FINAL_STATUS = "args_is_final_status";
+        private static Callback sCallback;
 
-        public static EnterLocationDialog newInstance(LpDetailsBean lpDetailsBean,
+        public static EnterLocationDialog newInstance(Callback callback,
                                                       boolean isFinalStatus) {
             EnterLocationDialog df = new EnterLocationDialog();
             Bundle b = new Bundle(2);
-            b.putParcelable(ARGS_DETAILS, lpDetailsBean);
+            sCallback = callback;
             b.putBoolean(ARGS_IS_FINAL_STATUS, isFinalStatus);
             df.setArguments(b);
             return df;
@@ -370,8 +389,8 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
             builder.setView(v);
             final EditText locationEt = (EditText) v.findViewById(R.id.location_et);
             Bundle b = getArguments();
-            final LpDetailsBean lpDetailsBean = b != null ? (LpDetailsBean) b.getParcelable(ARGS_DETAILS) : null;
-            final boolean isFinalStatus = b != null && b.getBoolean(ARGS_IS_FINAL_STATUS, false);
+            final LifePlan lpDetailsBean = b.getParcelable(ARGS_DETAILS);
+            final boolean isFinalStatus = b.getBoolean(ARGS_IS_FINAL_STATUS, false);
 
             builder.setTitle(R.string.enter_location_dialog_title);
             builder.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -379,24 +398,13 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                 public void onClick(DialogInterface dialog, int which) {
                     if (locationEt.getText() != null
                             && !TextUtils.isEmpty(locationEt.getText().toString().trim())) {
-                        if (lpDetailsBean != null) {
-                            if (!isFinalStatus && mMode == UiMode.createMode) {
-                                lpDetailsBean.setAddress(locationEt.getText().toString().trim());
-                            } else {
-                                lpDetailsBean.setFinalAddress(locationEt.getText().toString().trim());
-                            }
-                            mDbHelper.insertLpDetails(lpDetailsBean);
-                        }
-                        dismiss();
-                        Activity activity = getActivity();
-                        Toast.makeText(getActivity(), "添加时间规划成功！", Toast.LENGTH_SHORT).show();
-                        if (activity != null) {
-                            activity.finish();
-                        }
+                        sCallback.onEnterLocationSuccess(locationEt.getText().toString());
                     } else {
+                        sCallback.onEnterLocationFailed();
                         Toast.makeText(getActivity(), R.string.details_invalid_enter_location_failed,
                                 Toast.LENGTH_SHORT).show();
                     }
+                    dismiss();
                 }
             });
             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -404,12 +412,19 @@ public class LifePlanDetailsFrg extends Fragment implements View.OnClickListener
                 public void onClick(DialogInterface dialog, int which) {
                     Toast.makeText(getActivity(), R.string.details_invaild_enter_loctaion_none,
                             Toast.LENGTH_SHORT).show();
+                    sCallback.onEnterLocationFailed();
                     dismiss();
                 }
             });
             builder.setCancelable(false);
 
             return builder.create();
+        }
+
+        public interface Callback {
+            void onEnterLocationSuccess(String address);
+
+            void onEnterLocationFailed();
         }
     }
 }

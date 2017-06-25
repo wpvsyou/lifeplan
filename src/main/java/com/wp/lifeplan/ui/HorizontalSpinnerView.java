@@ -24,7 +24,7 @@ import java.util.Arrays;
  * Created by wangpeng on 2017/5/20.
  */
 
-public class HorizontalSpinnerView extends LinearLayout{
+public class HorizontalSpinnerView extends LinearLayout {
     private Spinner spinner;
     private TextView title;
     private ArrayList<String> enters = new ArrayList<String>();
@@ -48,7 +48,8 @@ public class HorizontalSpinnerView extends LinearLayout{
     public void setEnable(boolean enable) {
         spinner.setEnabled(enable);
     }
-    private void init(Context context, AttributeSet attrs){
+
+    private void init(Context context, AttributeSet attrs) {
         enters.clear();
         LayoutInflater factory = LayoutInflater.from(context);
         View v = factory.inflate(R.layout.horizontal_spinner_layout, this);
@@ -87,7 +88,7 @@ public class HorizontalSpinnerView extends LinearLayout{
     }
 
     public String getUserSelectedStr() {
-        return (String)spinner.getSelectedItem();
+        return (String) spinner.getSelectedItem();
     }
 
     public void putUserSelectedStr(String str) {

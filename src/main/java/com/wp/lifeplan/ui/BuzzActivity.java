@@ -19,7 +19,7 @@ public class BuzzActivity extends Activity {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent != null && AlertClockService.ACTION_MDM_STOP_BUZZ.endsWith(intent.getAction())){
+            if (intent != null && AlertClockService.ACTION_MDM_STOP_BUZZ.endsWith(intent.getAction())) {
                 finish();
             }
         }
@@ -42,7 +42,6 @@ public class BuzzActivity extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(AlertClockService.ACTION_MDM_STOP_BUZZ);
         registerReceiver(mReceiver, filter);
-
     }
 
     @Override
@@ -66,9 +65,10 @@ public class BuzzActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{
+        try {
             unregisterReceiver(mReceiver);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
     }
 }

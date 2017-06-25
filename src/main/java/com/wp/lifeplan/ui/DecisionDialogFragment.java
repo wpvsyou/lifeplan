@@ -16,10 +16,12 @@ public class DecisionDialogFragment extends DialogFragment {
 
     public interface Callback {
         void userSelectedYes();
+
         void userSelectedNo();
     }
 
     private static Callback CALLBACK;
+
     public final static DecisionDialogFragment newInstance(String message, Callback callback) {
         DecisionDialogFragment f = new DecisionDialogFragment();
         Bundle b = new Bundle(2);

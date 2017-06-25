@@ -1,42 +1,42 @@
 package com.wp.lifeplan.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.wp.lifeplan.LpApplication;
+import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLOperator;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.wp.lifeplan.R;
-import com.wp.lifeplan.model.beans.LpDetailsBean;
-import com.wp.lifeplan.model.db.LpChangedObserver;
-import com.wp.lifeplan.model.db.LpDbHelper;
+import com.wp.lifeplan.model.LifePlan;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
 import static com.wp.lifeplan.ui.CollectTimeLinearView.SDF_LOG2;
 
 /**
  * Created by wangpeng on 2017/5/21.
  */
 
-public class LifePlanListFrg extends Fragment
-        implements LpChangedObserver, OnItemClickListener {
+public class LifePlanListFrg extends Fragment implements OnItemClickListener {
     private View mRoot;
     private RecyclerView mRecyclerView;
     private LayoutInflater mInflater;
     private CustomRecyclerAdapter mAdapter;
-    private LpDbHelper mDbHelper;
-    private final static List<LpDetailsBean> DATA_ARRAYS = new ArrayList<LpDetailsBean>();
+    private final static List<LifePlan> DATA_ARRAYS = new ArrayList<LifePlan>();
 
     public static LifePlanListFrg newInstance() {
         return new LifePlanListFrg();
@@ -46,50 +46,34 @@ public class LifePlanListFrg extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInflater = LayoutInflater.from(getActivity());
-        mDbHelper = new LpDbHelper();
         mAdapter = new CustomRecyclerAdapter();
         mAdapter.setOnItemClickListener(this);
+
+        FlowContentObserver observer = new FlowContentObserver();
+        // registers for callbacks from the specified table
+        observer.registerForContentChanges(getActivity(), LifePlan.class);
+        FlowContentObserver.OnModelStateChangedListener modelChangeListener = new
+                FlowContentObserver.OnModelStateChangedListener() {
+
+            @Override
+            public void onModelStateChanged(@Nullable Class<?> table,
+                                            BaseModel.Action action,
+                                            @NonNull SQLOperator[] primaryKeyValues) {
+                Log.i(TAG, "onModelStateChanged");
+                asyncQueryLifePlanList();
+            }
+        };
+        observer.addModelChangeListener(modelChangeListener);
     }
 
     @Override
-    public void onLpChanged() {
-        new AsyncLoadLpDetailsTask().execute();
-    }
-
-    @Override
-    public void onItemClick(LpDetailsBean lpDetailsBean) {
+    public void onItemClick(LifePlan lpDetailsBean) {
         DetailActivity.startShowLpDetail(getActivity(), lpDetailsBean);
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
 
-    }
-
-    private class AsyncLoadLpDetailsTask extends AsyncTask<Void, Void, List<LpDetailsBean>> {
-
-        @Override
-        protected List<LpDetailsBean> doInBackground(Void... params) {
-            return mDbHelper.queryAllLp();
-        }
-
-        @Override
-        protected void onPostExecute(final List<LpDetailsBean> lpDetailsBeen) {
-            super.onPostExecute(lpDetailsBeen);
-            Activity act = getActivity();
-            if (act != null && !act.isFinishing()) {
-                act.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (DATA_ARRAYS) {
-                            DATA_ARRAYS.clear();
-                            DATA_ARRAYS.addAll(lpDetailsBeen);
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-            }
-        }
     }
 
     @Nullable
@@ -109,20 +93,33 @@ public class LifePlanListFrg extends Fragment
         mRecyclerView.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.setAdapter(mAdapter);
-        /*mRecyclerView.setRemoveListener(new CustomSwipeView.RemoveListener() {
-            @Override
-            public void removeItem(CustomSwipeView.RemoveDirection direction, int position) {
-                synchronized (DATA_ARRAYS) {
-                    LpDetailsBean lpDetailsBean = DATA_ARRAYS.get(position);
-                    if (lpDetailsBean != null) {
-                        DATA_ARRAYS.remove(lpDetailsBean);
-                        mDbHelper.deleteLp(lpDetailsBean.getUuid());
-                    }
+        asyncQueryLifePlanList();
+    }
+
+    private void asyncQueryLifePlanList() {
+        Log.i(TAG, "asyncQueryLifePlanList");
+        List<LifePlan> lps = SQLite.select()
+                .from(LifePlan.class)
+                .queryList();
+
+        DATA_ARRAYS.clear();
+                DATA_ARRAYS.addAll(lps);
+                if (getActivity() != null && !getActivity().isFinishing()) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
+       /*         }
+        SQLite.select().from(LifePlan.class).async().queryResultCallback(new QueryTransaction.QueryResultCallback<LifePlan>() {
+            @Override
+            public void onQueryResult(QueryTransaction<LifePlan> queryTransaction, @NonNull CursorResult<LifePlan> cursorResult) {
+                Log.i(TAG, "size: " + cursorResult.getCount());
+
             }
         });*/
-        new AsyncLoadLpDetailsTask().execute();
-        LpApplication.getInstance().getDatabase().regsiterObserver(this);
     }
 
     private class CustomRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -139,7 +136,7 @@ public class LifePlanListFrg extends Fragment
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final LpDetailsBean lpDetailsBean = DATA_ARRAYS.get(position);
+            final LifePlan lpDetailsBean = DATA_ARRAYS.get(position);
             holder.headIdea.setText(lpDetailsBean.getIdea());
 
             holder.tableStatus.setText(lpDetailsBean.getStatus());

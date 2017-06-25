@@ -2,7 +2,6 @@ package com.wp.lifeplan.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -60,8 +59,6 @@ public class ExtendTextView extends LinearLayout implements View.OnClickListener
         }
 
         extendButton.setOnClickListener(this);
-//        extendButton.setSelected(true);
-//        mainTv.setVisibility(VISIBLE);
         mainTv.setOnTouchListener(this);
         setExtend(true);
     }

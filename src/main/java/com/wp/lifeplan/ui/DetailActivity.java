@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.wp.lifeplan.R;
-import com.wp.lifeplan.model.beans.LpDetailsBean;
+import com.wp.lifeplan.model.LifePlan;
 
 /**
  * Created by wangpeng on 2017/5/21.
@@ -17,16 +17,16 @@ import com.wp.lifeplan.model.beans.LpDetailsBean;
 
 public class DetailActivity extends AppCompatActivity {
     private final static String ARGS_LP = "args_lp";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_activity_layout);
         handleIntent(getIntent());
-
     }
 
     private void handleIntent(Intent intent) {
-        LpDetailsBean lpDetailsBean = null;
+        LifePlan lpDetailsBean = null;
         if (intent != null) {
             lpDetailsBean = intent.getParcelableExtra(ARGS_LP);
         }
@@ -39,7 +39,7 @@ public class DetailActivity extends AppCompatActivity {
         ft.commit();
     }
 
-    public static void startShowLpDetail(Context context, LpDetailsBean lpDetailsBean) {
+    public static void startShowLpDetail(Context context, LifePlan lpDetailsBean) {
         Intent i = new Intent(context, DetailActivity.class);
         i.putExtra(ARGS_LP, lpDetailsBean);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -22,6 +22,9 @@
 # "proguard-android-optimize.txt" file instead of this one from your
 # project.properties file.
 
+-keep class * extends java.lang.annotation.Annotation { *; }
+-keep interface * extends java.lang.annotation.Annotation { *; }
+
 -keepattributes Signature
 -keepattributes *Annotation*
 -keep public class com.google.vending.licensing.ILicensingService
@@ -73,5 +76,6 @@
 -keep class com.j256.ormlite.** { *; }
 -keep class com.dd.plist.** { *; }
 
--keep class com.wp.lifeplan.model.beans.** { *; }
--keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
+-keep class com.wp.lifeplan.model.** { *; }
+-keep class com.raizlabs.android.dbflow.** { *; }
+

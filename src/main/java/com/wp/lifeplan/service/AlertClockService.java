@@ -2,7 +2,6 @@ package com.wp.lifeplan.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -19,7 +18,6 @@ import com.wp.lifeplan.R;
 import com.wp.lifeplan.ui.BuzzActivity;
 import com.wp.lifeplan.ui.LpActivity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -28,6 +26,7 @@ import java.util.HashMap;
 
 public class AlertClockService extends Service {
     private final static String TAG = "AlertClockService";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

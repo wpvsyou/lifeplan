@@ -2,8 +2,7 @@ package com.wp.lifeplan;
 
 import android.app.Application;
 
-import com.wp.lifeplan.model.db.LpDatabase;
-import com.wp.lifeplan.service.AlertClockService;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.wp.lifeplan.service.LocationService;
 
 import java.util.Calendar;
@@ -14,17 +13,18 @@ import java.util.Calendar;
 
 public class LpApplication extends Application {
     private static LpApplication sInstance;
+
     public static LpApplication getInstance() {
         return sInstance;
     }
 
     private LocationService mLocationService;
-    private LpDatabase mDatabase;
+
     @Override
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        mDatabase = new LpDatabase(this);
+        FlowManager.init(this);
         mLocationService = new LocationService(this).init();
 
         Calendar now = Calendar.getInstance();
@@ -44,9 +44,5 @@ public class LpApplication extends Application {
 
     public synchronized LocationService getLocationService() {
         return mLocationService;
-    }
-
-    public synchronized LpDatabase getDatabase() {
-        return mDatabase;
     }
 }

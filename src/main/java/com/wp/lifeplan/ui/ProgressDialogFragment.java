@@ -20,7 +20,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
@@ -34,10 +33,12 @@ public class ProgressDialogFragment extends DialogFragment {
     private final static String ARGS_MESSAGE = "args_message";
 
     // Public no-args constructor needed for fragment re-instantiation
-    public ProgressDialogFragment() {}
+    public ProgressDialogFragment() {
+    }
 
     /**
      * Create a dialog that reports progress
+     *
      * @param message check settings mode
      */
     public static ProgressDialogFragment newInstance(String message) {
