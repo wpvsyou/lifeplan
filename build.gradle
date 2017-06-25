@@ -18,13 +18,23 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+    signingConfigs {
+        myConfig {
+            storeFile file("lifePlanKey")
+            storePassword "lifeplan"
+            keyAlias "lifeplan"
+            keyPassword "lifeplan"
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.myConfig
             debuggable false
             minifyEnabled true
             proguardFile 'proguard-rules.txt'
         }
         debug {
+            signingConfig signingConfigs.myConfig
             debuggable true
             minifyEnabled false
         }

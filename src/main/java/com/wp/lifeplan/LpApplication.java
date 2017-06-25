@@ -27,8 +27,10 @@ public class LpApplication extends Application {
         sInstance = this;
         FlowManager.init(this);
         mLocationService = new LocationService(this).init();
-        AlertClockService.scheduleAlarmClock(this, "一天之计在于晨,来起来撒尿！", Calendar.getInstance(), new AlertClockService.Builder().setHours(6).setMinute(0));
-        AlertClockService.scheduleAlarmClock(this, "该睡觉了！", Calendar.getInstance(), new AlertClockService.Builder().setHours(22).setMinute(0));
+        AlertClockService.scheduleAlarmClock(this, "一天之计在于晨,来起来撒尿！", Calendar.getInstance(),
+                new AlertClockService.Builder().setHours(6).setMinute(0));
+        AlertClockService.scheduleAlarmClock(this, "该睡觉了！", Calendar.getInstance(),
+                new AlertClockService.Builder().setHours(22).setMinute(0));
     }
 
     public synchronized LocationService getLocationService() {
